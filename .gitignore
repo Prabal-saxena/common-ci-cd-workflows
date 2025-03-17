@@ -1,0 +1,29 @@
+# Compiled files
+target/
+*.class
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Dependency directories
+mvnw
+.mvn/
+node_modules/
+
+# Docker files
+*.dockerignore
+docker-compose.override.yml
+
+# Kubernetes files
+k8s-secrets.yaml
+
+# Environment variables
+.env
+.env.local
