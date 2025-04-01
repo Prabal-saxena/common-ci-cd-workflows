@@ -1,0 +1,54 @@
+name: 'Docker Build'
+description: 'docker build'
+
+inputs:
+  IMG_NAME:
+    description: image name
+    required: true
+  IMG_TAG:
+    description: image tag
+    required: true
+  ARTIFACT:
+    description: artifact
+    required: true
+  ARTIFACTORY_URL:
+    description: Artifactory url
+    required: true
+    default: ${ARTIFACTORY_URL}
+  ARTIFACTORY_NAMESPACE:
+    description: image namespace
+    required: true
+    default: ${ARTIFACTORY_NAMESPACE}
+  BUILD_TYPE:
+    required: false
+    default: "RELEASE"
+    description: Artifactory namespace
+
+runs:
+  using: composite
+  steps:
+    - name: Docker build
+      shell: bash
+      run: |-
+        ls -al
+        
+        echo "SNAPSHOT version move from target folder to home path and rename the jar"
+        export IMAGE_VERSION_TAG=${{ inputs.IMG_TAG }}
+        mv target/*.jar ${{ inputs.IMG_NAME }}.jar
+        
+        echo "Logging into docker"
+        echo ${{ inputs.ARTIFACTORY_PASSWORD }} | docker login --password-stdin --username ${{ inputs.ARTIFACTORY_USERNAME }} https://${{ inputs.ARTIFACTORY_URL}}/
+        
+        echo "Starting Build"
+        docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ env.IMAGE_LOCATION }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG \
+                   --build-arg ART_LOCATION=${{ inputs.ARTIFACTORY_URL }} .
+        
+        echo "Push to artifactory"
+        docker push ${{ inputs.ARTIFACTORY_URL }}/${{ env.IMAGE_LOCATION }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG
+        
+        echo "Docker CleanUp"
+        docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ env.IMAGE_LOCATION }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG
+        
+        echo "IMAGE_VERSION_TAG=$IMAGE_VERSION_TAG" >> $GITHUB_ENV
+        echo "IMAGE_VERSION_TAG : ${{ inputs.IMAGE_VERSION_TAG }}"
+        cat $GITHUB_ENV

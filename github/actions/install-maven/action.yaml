@@ -1,0 +1,22 @@
+name: 'Maven & JDK Install Commands'
+description: 'Maven & JDK Install'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+
+    - name: Check Maven
+      shell: bash
+      run: |-
+        mvn -version
+
+    - name: Set Artifact Version
+      shell: bash
+      run: |-
+        cd $GITHUB_WORKSPACE
+        echo "POM_VERSION=$(mvn org.apache.maven.plugin:maven-help-plugin:3.4.0:evaluate - Dexpression=project.version -s $GITHUB_WORKSPACE/setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -q -DforceStdout)" >> $GITHUB_ENV

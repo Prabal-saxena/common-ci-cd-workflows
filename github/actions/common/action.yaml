@@ -1,0 +1,41 @@
+name: Common Steps
+description: Configure common steps
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure environment
+      shell: bash
+      run: |-
+        echo "running on branch $GITHUB_REF"
+        echo "TARGET_ENV=dev" >> $GITHUB_ENV
+
+    - name: Load secrets
+      id: secrets
+      uses: google-github-actions/get-secretmanager-secrets@v1
+      with:
+        secrets: |-
+#          PG_ADMIN_PASSWORD: ${{ inputs.GOOGLE_PROJECT }}/PG_ADMIN_PASSWORD
+#          MONGODB_PASSWORD: ${{ inputs.GOOGLE_PROJECT }}/MONGODB_PASSWORD
+
+    - name: Configure Docker to use GCP Artifact Registry
+      shell: bash
+      run: |-
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+#
+#    - name: Configure artifactory credentials
+#      shell: bash
+#      env:
+#        ARTIFACTORY_USERNAME: ${{ steps.secrets.outputs.ARTIFACTORY_USERNAME }}
+#        ARTIFACTORY_PASSWORD: ${{ steps.secrets.outputs.ARTIFACTORY_PASSWORD }}
+#      run: |-
+#        echo "running on branch $GITHUB_REF"
+#        echo "===================================="
+#        echo "Setup Artifactory Credentials"
+#        echo "===================================="
+#        echo "Set Developer Artifactory Credentials"
+#        echo "ARTIFACTORY_USERNAME=$ARTIFACTORY_USERNAME" >> $GITHUB_ENV
+#        echo "ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD" >> $GITHUB_ENV
+#        echo "JAR_LOCATION=snapshot-jar" >> $GITHUB_ENV
+#        echo "IMAGE_LOCATION=images" >> $GITHUB_ENV
+#        echo "VERSION_TAG=SNAPSHOT" >> $GITHUB_ENV

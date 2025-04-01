@@ -1,0 +1,100 @@
+name: "SNAPSHOT : Docker Image Build & Deploy on GKE"
+
+on:
+  workflow_call:
+    inputs:
+      APPLICATION_NAME:
+        description: 'application name'
+        required: true
+        type: string
+      IMAGE_TAG:
+        description: 'Tag of the Docker Image to be deployed'
+        required: true
+        type: string
+      ARTIFACTORY_URL:
+        description: 'Artifactory url'
+        required: true
+        type: string
+      ARTIFACTORY_NAMESPACE:
+        description: 'Artifactory url'
+        required: true
+        type: string
+      PROJECT_ID:
+        description: 'Project name'
+        required: true
+        type: string
+      LZF_PROJECT_ID:
+        description: 'LZF Project name'
+        required: true
+        type: string
+      GKE_REGION:
+        description: 'GKE Region'
+        required: true
+        type: string
+      GKE_CLUSTER:
+        description: 'GKE Cluster name'
+        required: true
+        type: string
+      GKE_NAMESPACE:
+        description: 'GKE namespace'
+        required: true
+        type: string
+
+env:
+  BUILD_TYPE: "SNAPSHOT"
+  ARTIFACTORY_URL: ${{ inputs.ARTIFACTORY_URL }}
+  APPLICATION_NAME: ${{ inputs.APPLICATION_NAME }}
+  ARTIFACTORY_NAMESPACE: ${{ inputs.ARTIFACTORY_NAMESPACE }}
+  PROJECT_ID: ${{ inputs.PROJECT_ID }}
+  LZF_PROJECT_ID: ${{ inputs.LZF_PROJECT_ID }}
+  GKE_REGION: ${{ inputs.GKE_REGION }}
+  GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
+  GKE_NAMESPACE: ${{ inputs.GKE_NAMESPACE }}
+  IMAGE_VERSION_TAG: ${{ inputs.IMAGE_TAG }}
+  TARGET_ENV: "dev"
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  build-docker-image:
+    name: Build Docker Image
+    outputs:
+      IMAGE_NAME: ${{ env.APPLICATION_NAME }}
+      VERSION: ${{ env.POM_VERSION }}
+      JAR_LOCATION: ${{ env.JAR_LOCATION }}
+    steps:
+      - name: Checkout Repository
+        uses: action/checkout@v3
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.CI_CD_SA_SECRET }} # This SA Secret will auth GCP and download artifacts
+
+      - name: Common setup for Configuring Artifactory
+        uses: # url of location to common@main
+
+      - name: Common Setup for installing maven, JDK & App Version
+        uses: # url of location to install-maven@main
+
+      - name: Deploy with Maven
+        uses: # url of location to maven-build@main
+        with:
+          COMMAND: clean install --file pom.xml -s setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -DskipTests
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APPLICATION_NAME  }}
+          path: ./target/${{ env.APPLICATION_NAME }}-${{ env.POM_VERSION }}.jar
+
+      - name: Docker Build
+        uses: # path of location to docker-build@main
+        with:
+          IMG_NAME: ${APPLICATION_NAME}
+          IMG_TAG: ${POM_VERSION}
+          ARTIFACTORY_URL: ${{ env.ARTIFACTORY_URL }}
+          ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
+          BUILD_TYPE: ${{ env.BUILD_TYPE }}
