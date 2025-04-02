@@ -1,0 +1,14 @@
+name: 'Maven Commands'
+description: 'Maven actions'
+inputs:
+  COMMAND:
+    description: maven command
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Maven Build
+      shell: bash
+      run: |
+        mvn ${{ inputs.COMMAND }}

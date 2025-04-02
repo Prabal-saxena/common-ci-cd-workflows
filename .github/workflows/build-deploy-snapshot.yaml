@@ -74,13 +74,13 @@ jobs:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }} # This SA Secret will auth GCP and download artifacts
 
       - name: Common setup for Configuring Artifactory
-        uses: # url of location to common@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@main
 
       - name: Common Setup for installing maven, JDK & App Version
-        uses: # url of location to install-maven@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/install-maven@main
 
       - name: Deploy with Maven
-        uses: # url of location to maven-build@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/maven-build@main
         with:
           COMMAND: clean install --file pom.xml -s setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -DskipTests
 
@@ -91,7 +91,7 @@ jobs:
           path: ./target/${{ env.APPLICATION_NAME }}-${{ env.POM_VERSION }}.jar
 
       - name: Docker Build
-        uses: # path of location to docker-build@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@main
         with:
           IMG_NAME: ${APPLICATION_NAME}
           IMG_TAG: ${POM_VERSION}
