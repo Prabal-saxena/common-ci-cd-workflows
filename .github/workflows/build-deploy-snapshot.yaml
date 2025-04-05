@@ -11,6 +11,10 @@ on:
         description: 'Tag of the Docker Image to be deployed'
         required: true
         type: string
+      POM_VERSION:
+        description: 'version of POM'
+        required: true
+        type: string
       ARTIFACTORY_URL:
         description: 'Artifactory url'
         required: true
@@ -21,10 +25,6 @@ on:
         type: string
       PROJECT_ID:
         description: 'Project name'
-        required: true
-        type: string
-      LZF_PROJECT_ID:
-        description: 'LZF Project name'
         required: true
         type: string
       GKE_REGION:
