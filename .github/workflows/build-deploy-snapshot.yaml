@@ -59,6 +59,7 @@ permissions:
 jobs:
   build-docker-image:
     name: Build Docker Image
+    runs-on: ubuntu-latest
     outputs:
       IMAGE_NAME: ${{ env.APPLICATION_NAME }}
       VERSION: ${{ env.POM_VERSION }}
