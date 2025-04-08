@@ -10,11 +10,11 @@ runs:
         echo "running on branch $GITHUB_REF"
         echo "TARGET_ENV=dev" >> $GITHUB_ENV
 
-    - name: Load secrets
-      id: secrets
-      uses: google-github-actions/get-secretmanager-secrets@v1
-      with:
-        secrets: |-
+#    - name: Load secrets
+#      id: secrets
+#      uses: google-github-actions/get-secretmanager-secrets@v1
+#      with:
+#        secrets: |-
 #          PG_ADMIN_PASSWORD: ${{ inputs.GOOGLE_PROJECT }}/PG_ADMIN_PASSWORD
 #          MONGODB_PASSWORD: ${{ inputs.GOOGLE_PROJECT }}/MONGODB_PASSWORD
 
