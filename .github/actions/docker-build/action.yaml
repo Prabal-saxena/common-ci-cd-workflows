@@ -11,11 +11,9 @@ inputs:
   ARTIFACTORY_URL:
     description: Artifactory url
     required: true
-    default: ${ARTIFACTORY_URL}
   ARTIFACTORY_NAMESPACE:
     description: image namespace
     required: true
-    default: ${ARTIFACTORY_NAMESPACE}
   BUILD_TYPE:
     required: false
     default: "RELEASE"
@@ -33,12 +31,8 @@ runs:
         export IMAGE_VERSION_TAG=${{ inputs.IMG_TAG }}
         mv target/*.jar ${{ inputs.IMG_NAME }}.jar
         
-#        echo "Logging into docker"
-#        echo ${{ inputs.ARTIFACTORY_PASSWORD }} | docker login --password-stdin --username ${{ inputs.ARTIFACTORY_USERNAME }} https://${{ inputs.ARTIFACTORY_URL}}/
-
         echo "Starting Build"
         docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG .
-#                   --build-arg ART_LOCATION=${{ inputs.ARTIFACTORY_URL }} .
         
         echo "Push to artifactory"
         docker push ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG
