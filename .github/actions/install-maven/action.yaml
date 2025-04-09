@@ -19,4 +19,5 @@ runs:
       shell: bash
       run: |-
         cd $GITHUB_WORKSPACE
-        echo "POM_VERSION=$(mvn org.apache.maven.plugin:maven-help-plugin:3.4.0:evaluate - Dexpression=project.version -s $GITHUB_WORKSPACE/setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -q -DforceStdout)" >> $GITHUB_ENV
+        echo "POM_VERSION=$(mvn org.apache.maven.plugin:maven-help-plugin:3.4.0:evaluate - Dexpression=project.version -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -q -DforceStdout)" >> $GITHUB_ENV
+#        echo "POM_VERSION=$(mvn org.apache.maven.plugin:maven-help-plugin:3.4.0:evaluate - Dexpression=project.version -s $GITHUB_WORKSPACE/setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -q -DforceStdout)" >> $GITHUB_ENV
