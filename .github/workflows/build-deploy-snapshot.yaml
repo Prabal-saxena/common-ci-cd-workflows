@@ -90,6 +90,9 @@ jobs:
           name: ${{ env.APPLICATION_NAME  }}
           path: ./target/${{ env.APPLICATION_NAME }}-${{ env.POM_VERSION }}.jar
 
+      - name: Rename JAR for Docker
+        run: mv target/${{ env.APPLICATION_NAME }}-${{ env.POM_VERSION }}.jar app.jar
+
       - name: Docker Build
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/build-deploy-snapshot
         with:
