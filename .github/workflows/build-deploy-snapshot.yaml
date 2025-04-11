@@ -11,6 +11,10 @@ on:
         description: 'Tag of the Docker Image to be deployed'
         required: true
         type: string
+      POM_VERSION:
+        description: 'version of POM'
+        required: true
+        type: string
       ARTIFACTORY_URL:
         description: 'Artifactory url'
         required: true
@@ -21,10 +25,6 @@ on:
         type: string
       PROJECT_ID:
         description: 'Project name'
-        required: true
-        type: string
-      LZF_PROJECT_ID:
-        description: 'LZF Project name'
         required: true
         type: string
       GKE_REGION:
@@ -46,7 +46,6 @@ env:
   APPLICATION_NAME: ${{ inputs.APPLICATION_NAME }}
   ARTIFACTORY_NAMESPACE: ${{ inputs.ARTIFACTORY_NAMESPACE }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
-  LZF_PROJECT_ID: ${{ inputs.LZF_PROJECT_ID }}
   GKE_REGION: ${{ inputs.GKE_REGION }}
   GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
   GKE_NAMESPACE: ${{ inputs.GKE_NAMESPACE }}
@@ -60,13 +59,14 @@ permissions:
 jobs:
   build-docker-image:
     name: Build Docker Image
+    runs-on: ubuntu-latest
     outputs:
       IMAGE_NAME: ${{ env.APPLICATION_NAME }}
       VERSION: ${{ env.POM_VERSION }}
       JAR_LOCATION: ${{ env.JAR_LOCATION }}
     steps:
       - name: Checkout Repository
-        uses: action/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
@@ -74,13 +74,13 @@ jobs:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }} # This SA Secret will auth GCP and download artifacts
 
       - name: Common setup for Configuring Artifactory
-        uses: # url of location to common@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/build-deploy-snapshot
 
       - name: Common Setup for installing maven, JDK & App Version
-        uses: # url of location to install-maven@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/install-maven@feature/build-deploy-snapshot
 
       - name: Deploy with Maven
-        uses: # url of location to maven-build@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/maven-build@feature/build-deploy-snapshot
         with:
           COMMAND: clean install --file pom.xml -s setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -DskipTests
 
@@ -90,8 +90,11 @@ jobs:
           name: ${{ env.APPLICATION_NAME  }}
           path: ./target/${{ env.APPLICATION_NAME }}-${{ env.POM_VERSION }}.jar
 
+      - name: Check built JAR
+        run: ls -lh target/
+
       - name: Docker Build
-        uses: # path of location to docker-build@main
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/build-deploy-snapshot
         with:
           IMG_NAME: ${APPLICATION_NAME}
           IMG_TAG: ${POM_VERSION}
