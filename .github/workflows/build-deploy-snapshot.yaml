@@ -112,9 +112,9 @@ jobs:
       - build-docker-image
     steps:
       - name: Checkout Repository
-        uses: actions/chechout@v3
+        uses: actions/chechout@v4
 
-      - name: Google Cloud Auth
+      - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }}
