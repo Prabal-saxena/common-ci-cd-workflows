@@ -77,13 +77,13 @@ jobs:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }} # This SA Secret will auth GCP and download artifacts
 
       - name: Common setup for Configuring Artifactory
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/build-deploy-snapshot
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
 
       - name: Common Setup for installing maven, JDK & App Version
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/install-maven@feature/build-deploy-snapshot
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/install-maven@feature/helm_pkg_repo_deploy_gke
 
       - name: Deploy with Maven
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/maven-build@feature/build-deploy-snapshot
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/maven-build@feature/helm_pkg_repo_deploy_gke
         with:
           COMMAND: clean install --file pom.xml -s setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -DskipTests
 
@@ -97,7 +97,7 @@ jobs:
         run: ls -lh target/
 
       - name: Docker Build
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/build-deploy-snapshot
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/helm_pkg_repo_deploy_gke
         with:
           IMG_NAME: ${APPLICATION_NAME}
           IMG_TAG: ${POM_VERSION}
@@ -119,7 +119,7 @@ jobs:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }}
 
       - name: Common setup for Configuring Artifactory
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/build-deploy-snapshot
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
 
       - name: Get Cluster Details
         uses: 'google-github-actions/get-gke-credentials@v1'
