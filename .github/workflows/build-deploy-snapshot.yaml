@@ -105,7 +105,8 @@ jobs:
           ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
           BUILD_TYPE: ${{ env.BUILD_TYPE }}
 
-  hrlm-package-on-artifactory:
+  helm-package-on-artifactory:
+    runs-on: ubuntu-latest
     name: Build & Publish Helm Package
     needs:
       - build-docker-image
