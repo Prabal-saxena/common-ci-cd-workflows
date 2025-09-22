@@ -132,7 +132,7 @@ jobs:
       - name: Download the Helm artifact
         run: |
           echo "gs://${HELM_ARTIFACTS}"
-          gsutil cp gs://${HELM_ARTIFACTS} ${ZIP_FILE_NAME}
+          gsutil cp gs://${HELM_ARTIFACTS} .
 
       - name: Unzip Helm Chart
         shell: bash
