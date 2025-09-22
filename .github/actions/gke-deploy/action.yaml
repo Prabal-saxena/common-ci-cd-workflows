@@ -23,7 +23,6 @@ inputs:
     required: true
   HELM_BIN:
     required: true
-    default: "RELEASE"
     description: Path to helm binary
   IMG_URL:
     required: true
@@ -42,9 +41,9 @@ runs:
       shell: bash
       run: |
         CHART_PATH=./${{ env.APPLICATION_NAME }}-helm
-        "${{ inputs.HELM_BIN}}" upgrade \
+        "${{ HELM_BIN}}" upgrade \
             --install -f ${{ env.APPLICATION_NAME }}-helm/values.yaml $RELEASE $CHART_PATH \
-            --set namespace=${{ input.GKE_NAMESPACE }}
+            --set namespace=${{ GKE_NAMESPACE }}
             --set env="dev"
             --wait \
             --timeout 10m
@@ -53,8 +52,8 @@ runs:
       id: verify
       shell: bash
       run: |
-        kubectl get all -n ${{ input.GKE_NAMESPACE }}
+        kubectl get all -n ${{ GKE_NAMESPACE }}
         kubectl cluster-info
         sleep 10
-        echo "View Pods in namespace ${{ input.GKE_NAMESPACE }}"
-        kubectl get pods -n ${{ input.GKE_NAMESPACE }}
+        echo "View Pods in namespace ${{ GKE_NAMESPACE }}"
+        kubectl get pods -n ${{ GKE_NAMESPACE }}
