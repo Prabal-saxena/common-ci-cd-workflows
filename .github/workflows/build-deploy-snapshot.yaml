@@ -164,5 +164,50 @@ jobs:
           cp -r ./helm/dev/values.yaml extracted_chart/helm/dev
           cp -r ./helm/external-secret.yaml extracted_chart/helm/dev
           ls -al
-          
-          
+
+      - name: Helm package
+        shell: bash
+        run: |
+          ls -al
+          echo "-------------------Run helm package command--------------------"
+          echo "Version : ${{ needs.build-docker-image.outputs.VERSION }}"
+          helm package extracted_chart/helm --version ${{ needs.build-docker-image.outputs.VERSION }} --app-version ${{ needs.build-docker-image.outputs.VERSION }}
+
+      - name: Upload Helm Package
+        uses: actions/upload-artifacts@v4
+        with:
+          name: helm_package
+          path: ${{ inputs.APPLICATION_NAME }}-${{ needs.build-docker-image.outputs.VERSION }}.tgz
+
+#  deploy-image-on-gke:
+#    runs-on: ubuntu-latest
+#    name: Deploy to GKE
+#    needs:
+#      - helm-package-on-artifactory
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v4
+#
+#      - name: Authenticate to GCP
+#        uses: google-github-actions/auth@v2
+#        with:
+#          credentials_json: ${{ secrets.CI_CD_SA_SECRET }}
+#
+#      - name: Common setup for Configuring Artifactory
+#        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
+#
+#      - name: Download Helm Package
+#        uses: action/download-artifact@v4
+#        with:
+#          name: helm_package
+#
+#      - name: List Directories
+#        shell: bash
+#        run: |
+#          echo "------------------ Run ls command to print all directories and files ------------------"
+#          ls -al
+#          echo "------------------ Unzip to tgz file-------------------"
+#          tar -xvf ${{ inputs.APPLICATION_NAME }}-*.tgz
+#          mv ${{ inputs.APPLICATION_NAME }} vgp-helm
+#          ls -al
+
