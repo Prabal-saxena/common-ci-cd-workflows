@@ -172,6 +172,7 @@ jobs:
           echo "-------------------Run helm package command--------------------"
           echo "Version : ${{ needs.build-docker-image.outputs.VERSION }}"
           helm package extracted_chart/helm --version ${{ needs.build-docker-image.outputs.VERSION }} --app-version ${{ needs.build-docker-image.outputs.VERSION }}
+          ls -al
 
       - name: Upload Helm Package
         uses: actions/upload-artifact@v4
