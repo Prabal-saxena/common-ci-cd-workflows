@@ -201,6 +201,12 @@ jobs:
       - name: Common setup for Configuring Artifactory
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
 
+      - name: Authenticate to GKE
+        run: |
+          gcloud container clusters get-credentials "${{ inputs.GKE_CLUSTER }}" \
+            --region "$GKE_REGION" \
+            --project "$PROJECT_ID"
+
       - name: Download Helm Package
         uses: actions/download-artifact@v4
         with:
@@ -224,7 +230,7 @@ jobs:
           RELEASE: ${{ env.APPLICATION_NAME }}
           IMG_NAME: ${{ env.APPLICATION_NAME }}
           IMG_TAG: ${{ env.IMG_TAG }}
-          GKE_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
+          GKE_NAMESPACE: ${{ env.GKE_NAMESPACE }}
           HELM_BIN: "helm"
           IMG_URL: ${{ env.IMG_URL }}
 
