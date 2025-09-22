@@ -202,7 +202,7 @@ jobs:
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
 
       - name: Download Helm Package
-        uses: action/download-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           name: helm_package
 
