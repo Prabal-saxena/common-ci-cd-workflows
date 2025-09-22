@@ -34,16 +34,16 @@ runs:
     - name: Create namespace if it doesn't exist
       shell: bash
       run: |
-        kubectl get namespace $GKE_NAMESPACE >/dev/null 2>&1 || \
-          kubectl create namespace $GKE_NAMESPACE
+        kubectl get namespace ${{ inputs.GKE_NAMESPACE }} >/dev/null 2>&1 || \
+          kubectl create namespace ${{ inputs.GKE_NAMESPACE }}
 
     - name: Deploy via helm
       shell: bash
       run: |
         CHART_PATH=./${{ env.APPLICATION_NAME }}-helm
-        "${{ HELM_BIN}}" upgrade \
-            --install -f ${{ env.APPLICATION_NAME }}-helm/values.yaml $RELEASE $CHART_PATH \
-            --set namespace=${{ GKE_NAMESPACE }}
+        "${{ inputs.HELM_BIN}}" upgrade \
+            --install -f ${{ env.APPLICATION_NAME }}-helm/values.yaml ${{ inputs.RELEASE }} $CHART_PATH \
+            --set namespace=${{ inputs.GKE_NAMESPACE }}
             --set env="dev"
             --wait \
             --timeout 10m
@@ -52,8 +52,8 @@ runs:
       id: verify
       shell: bash
       run: |
-        kubectl get all -n ${{ GKE_NAMESPACE }}
+        kubectl get all -n ${{ inputs.GKE_NAMESPACE }}
         kubectl cluster-info
         sleep 10
-        echo "View Pods in namespace ${{ GKE_NAMESPACE }}"
-        kubectl get pods -n ${{ GKE_NAMESPACE }}
+        echo "View Pods in namespace ${{ inputs.GKE_NAMESPACE }}"
+        kubectl get pods -n ${{ inputs.GKE_NAMESPACE }}
