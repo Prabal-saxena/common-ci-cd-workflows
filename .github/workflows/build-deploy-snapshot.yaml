@@ -39,6 +39,10 @@ on:
         description: 'GKE namespace'
         required: true
         type: string
+      RELEASE:
+        description: 'Release Name'
+        required: true
+        type: string
 
 env:
   BUILD_TYPE: "SNAPSHOT"
@@ -54,6 +58,7 @@ env:
   HELM_ARTIFACTS: "onlineliquorservices_bucket/ecom_helm/dev/ecom_helm.zip"
   ZIP_FILE_NAME: ecom_helm.zip
   APP_VERSION: ${{ inputs.POM_VERSION }}
+  RELEASE: ${{ inputs.RELEASE }}
 
 permissions:
   id-token: write
@@ -228,7 +233,7 @@ jobs:
         with:
           ARTIFACTORY_URL: ${{ env.ARTIFACTORY_URL }}
           ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
-          RELEASE: ${{ env.APPLICATION_NAME }}
+          RELEASE: ${{ env.RELEASE }}
           IMG_NAME: ${{ env.APPLICATION_NAME }}
           IMG_TAG: ${{ env.IMG_TAG }}
           GKE_NAMESPACE: ${{ env.GKE_NAMESPACE }}
