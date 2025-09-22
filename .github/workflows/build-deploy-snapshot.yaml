@@ -129,6 +129,9 @@ jobs:
           location: ${{ env.GKE_REGION }}
           project_id:  ${{ env.PROJECT_ID }}
 
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Download the Helm artifact
         run: |
           echo "gs://${HELM_ARTIFACTS}"
