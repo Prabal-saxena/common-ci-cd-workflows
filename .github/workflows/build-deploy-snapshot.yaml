@@ -112,7 +112,7 @@ jobs:
       - build-docker-image
     steps:
       - name: Checkout Repository
-        uses: actions/chechout@v4
+        uses: actions/checkout@v4
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
