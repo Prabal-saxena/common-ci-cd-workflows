@@ -155,4 +155,14 @@ jobs:
           sed -i "s/^appVersion: .*/appVersion: \"${APP_VERSION}\"/" "$CHART_FILE"
           echo "Updated Chart.yaml"
           cat "$CHART_FILE"
+
+      - name: Setup Environment Configuration
+        shell: bash
+        run: |
+          echo "Copy application properties from scr folder"
+          cp -r ./src/main/resources extracted_chart/helm
+          cp -r ./helm/dev/values.yaml extracted_chart/helm/dev
+          cp -r ./helm/external-secret.yaml extracted_chart/helm/dev
+          ls -al
+          
           
