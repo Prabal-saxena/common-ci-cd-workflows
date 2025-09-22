@@ -201,11 +201,12 @@ jobs:
       - name: Common setup for Configuring Artifactory
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
 
-      - name: Authenticate to GKE
-        run: |
-          gcloud container clusters get-credentials "${{ inputs.GKE_CLUSTER }}" \
-            --region "$GKE_REGION" \
-            --project "$PROJECT_ID"
+      - name: Configure GKE credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_REGION }}
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: Download Helm Package
         uses: actions/download-artifact@v4
