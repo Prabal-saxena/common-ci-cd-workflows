@@ -174,7 +174,7 @@ jobs:
           helm package extracted_chart/helm --version ${{ needs.build-docker-image.outputs.VERSION }} --app-version ${{ needs.build-docker-image.outputs.VERSION }}
 
       - name: Upload Helm Package
-        uses: actions/upload-artifacts@v4
+        uses: actions/upload-artifact@v4
         with:
           name: helm_package
           path: ${{ inputs.APPLICATION_NAME }}-${{ needs.build-docker-image.outputs.VERSION }}.tgz
