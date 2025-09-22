@@ -160,6 +160,7 @@ jobs:
           
           echo "Updating app version in Chart.yaml file"
           CHART_FILE="extracted_chart/helm/Chart.yaml"
+          sed -i "s/^name: .*/name: ${RELEASE}/" "$CHART_FILE"
           sed -i "s/^version: .*/version: ${APP_VERSION}/" "$CHART_FILE"
           sed -i "s/^appVersion: .*/appVersion: \"${APP_VERSION}\"/" "$CHART_FILE"
           echo "Updated Chart.yaml"
