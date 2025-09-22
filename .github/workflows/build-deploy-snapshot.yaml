@@ -51,7 +51,7 @@ env:
   GKE_NAMESPACE: ${{ inputs.GKE_NAMESPACE }}
   IMAGE_VERSION_TAG: ${{ inputs.IMAGE_TAG }}
   TARGET_ENV: "dev"
-  HELM_ARTIFACTS: "onlineliquorservices_bucket/ecom_helm/dev/ecom_helm.zip"
+  HELM_ARTIFACTS: "onlineliquorservices_bucket/ecom_helm/dev/"
   ZIP_FILE_NAME: ecom_helm.zip
   APP_VERSION: ${{ inputs.POM_VERSION }}
 
