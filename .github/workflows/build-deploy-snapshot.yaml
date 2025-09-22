@@ -9,7 +9,7 @@ on:
         type: string
       IMAGE_TAG:
         description: 'Tag of the Docker Image to be deployed'
-        required: true
+        required: false
         type: string
       POM_VERSION:
         description: 'version of POM'
@@ -49,7 +49,7 @@ env:
   GKE_REGION: ${{ inputs.GKE_REGION }}
   GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
   GKE_NAMESPACE: ${{ inputs.GKE_NAMESPACE }}
-  IMAGE_VERSION_TAG: ${{ inputs.IMAGE_TAG }}
+  IMG_TAG: ${{ inputs.IMAGE_TAG }}
   TARGET_ENV: "dev"
   HELM_ARTIFACTS: "onlineliquorservices_bucket/ecom_helm/dev/ecom_helm.zip"
   ZIP_FILE_NAME: ecom_helm.zip
@@ -100,7 +100,7 @@ jobs:
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/helm_pkg_repo_deploy_gke
         with:
           IMG_NAME: ${APPLICATION_NAME}
-          IMG_TAG: ${POM_VERSION}
+          IMG_TAG: ${IMG_TAG}
           ARTIFACTORY_URL: ${{ env.ARTIFACTORY_URL }}
           ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
           BUILD_TYPE: ${{ env.BUILD_TYPE }}
@@ -149,6 +149,10 @@ jobs:
           cp ./helm/dev/values.yaml extracted_chart/helm/values.yaml
           echo "Replaced values.yaml:"
           cat extracted_chart/helm/values.yaml
+          VALUE_FILE="extracted_chart/helm/values.yaml"
+          yq -i ".image.tag = \"$IMG_TAG\"" "$VALUE_FILE"
+          cat extracted_chart/helm/values.yaml
+          
           echo "Updating app version in Chart.yaml file"
           CHART_FILE="extracted_chart/helm/Chart.yaml"
           sed -i "s/^version: .*/version: ${APP_VERSION}/" "$CHART_FILE"
@@ -180,35 +184,48 @@ jobs:
           name: helm_package
           path: ecom_helm-${{ needs.build-docker-image.outputs.VERSION }}.tgz
 
-#  deploy-image-on-gke:
-#    runs-on: ubuntu-latest
-#    name: Deploy to GKE
-#    needs:
-#      - helm-package-on-artifactory
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v4
-#
-#      - name: Authenticate to GCP
-#        uses: google-github-actions/auth@v2
-#        with:
-#          credentials_json: ${{ secrets.CI_CD_SA_SECRET }}
-#
-#      - name: Common setup for Configuring Artifactory
-#        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
-#
-#      - name: Download Helm Package
-#        uses: action/download-artifact@v4
-#        with:
-#          name: helm_package
-#
-#      - name: List Directories
-#        shell: bash
-#        run: |
-#          echo "------------------ Run ls command to print all directories and files ------------------"
-#          ls -al
-#          echo "------------------ Unzip to tgz file-------------------"
-#          tar -xvf ${{ inputs.APPLICATION_NAME }}-*.tgz
-#          mv ${{ inputs.APPLICATION_NAME }} vgp-helm
-#          ls -al
+  deploy-image-on-gke:
+    runs-on: ubuntu-latest
+    name: Deploy to GKE
+    needs:
+      - helm-package-on-artifactory
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.CI_CD_SA_SECRET }}
+
+      - name: Common setup for Configuring Artifactory
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
+
+      - name: Download Helm Package
+        uses: action/download-artifact@v4
+        with:
+          name: helm_package
+
+      - name: List Directories
+        shell: bash
+        run: |
+          echo "------------------ Run ls command to print all directories and files ------------------"
+          ls -al
+          echo "------------------ Unzip the tgz file-------------------"
+          tar -xvf ecom_helm-*.tgz
+          mv ecom_helm ${{ env.APPLICATION_NAME }}-helm
+          ls -al
+
+      - name: Deploy With Helm
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/gke-deploy@feature/helm_pkg_repo_deploy_gke
+        with:
+          ARTIFACTORY_URL: ${{ env.ARTIFACTORY_URL }}
+          ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
+          RELEASE: ${{ env.APPLICATION_NAME }}
+          IMG_NAME: ${{ env.APPLICATION_NAME }}
+          IMG_TAG: ${{ env.IMG_TAG }}
+          GKE_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
+          HELM_BIN: "helm"
+          IMG_URL: ${{ env.IMG_URL }}
+
 
