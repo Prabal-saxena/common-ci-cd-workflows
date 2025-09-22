@@ -51,7 +51,7 @@ env:
   GKE_NAMESPACE: ${{ inputs.GKE_NAMESPACE }}
   IMAGE_VERSION_TAG: ${{ inputs.IMAGE_TAG }}
   TARGET_ENV: "dev"
-  HELM_ARTIFACTS: "onlineliquorservices_bucket/ecom_helm/dev/"
+  HELM_ARTIFACTS: "onlineliquorservices_bucket/ecom_helm/dev/ecom_helm.zip"
   ZIP_FILE_NAME: ecom_helm.zip
   APP_VERSION: ${{ inputs.POM_VERSION }}
 
@@ -132,7 +132,7 @@ jobs:
       - name: Download the Helm artifact
         run: |
           echo "gs://${HELM_ARTIFACTS}"
-          gsutil cp ecom_helm.zip gs://onlineliquorservices_bucket/ecom_helm/dev/
+          gsutil cp gs://${HELM_ARTIFACTS} ${ZIP_FILE_NAME}
 
       - name: Unzip Helm Chart
         shell: bash
