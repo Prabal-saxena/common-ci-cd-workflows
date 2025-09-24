@@ -19,6 +19,12 @@ inputs:
     default: "RELEASE"
     description: Artifactory namespace
 
+outputs:
+  IMG_TAG:
+    description: "Image Tag"
+  IMG_URL:
+    description: "Full Image URL"
+
 runs:
   using: composite
   steps:
@@ -34,15 +40,14 @@ runs:
         echo "Using IMG_TAG = $IMG_TAG"
         
         echo "Starting Build"
-        docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:IMG_TAG .
+        docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG .
         
         echo "Push to artifactory"
-        docker push ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:IMG_TAG
+        docker push ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG
         
         echo "Docker CleanUp"
-        docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:IMG_TAG
+        docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG
         
-        echo "IMG_TAG=${{ inputs.IMG_TAG }}" >> GITHUB_OUTPUT
-        echo "IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.APPLICATION_NAME }}:${{ inputs.IMG_TAG }}" >> GITHUB_OUTPUT
-        echo "IMG_TAG: ${{ inputs.IMG_TAG }}"
+        echo "IMG_TAG=$IMG_TAG" >> "$GITHUB_OUTPUT"
+        echo "IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG" >> "$GITHUB_OUTPUT"
         cat $GITHUB_ENV

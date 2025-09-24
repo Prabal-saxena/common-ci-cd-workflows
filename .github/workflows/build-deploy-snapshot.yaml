@@ -72,8 +72,8 @@ jobs:
       IMAGE_NAME: ${{ env.APPLICATION_NAME }}
       VERSION: ${{ env.POM_VERSION }}
       JAR_LOCATION: ${{ env.JAR_LOCATION }}
-      IMG_TAG: ${{ steps.export-vars.outputs.IMG_TAG }}
-      IMG_URL: ${{ steps.export-vars.outputs.IMG_URL }}
+      IMG_TAG: ${{ steps.docker-build.outputs.IMG_TAG }}
+      IMG_URL: ${{ steps.docker-build.outputs.IMG_URL }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -104,6 +104,7 @@ jobs:
         run: ls -lh target/
 
       - name: Docker Build
+        id: docker-build
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/helm_pkg_repo_deploy_gke
         with:
           IMG_NAME: ${APPLICATION_NAME}
@@ -117,6 +118,9 @@ jobs:
     name: Build & Publish Helm Package
     needs:
       - build-docker-image
+    env:
+      IMG_TAG: ${{ needs.build-docker-image.outputs.IMG_TAG }}
+      IMG_URL: ${{ needs.build-docker-image.outputs.IMG_URL }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
