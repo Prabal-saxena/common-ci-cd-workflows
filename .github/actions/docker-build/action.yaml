@@ -29,20 +29,20 @@ runs:
         ls -al
         
         echo "SNAPSHOT version move from target folder to home path and rename the jar"
-        if [ -z "$IMG_TAG" ]; then
-          IMG_TAG=$(git rev-parse --short HEAD)
+        if [ -z "${{ inputs.IMG_TAG }}" ]; then
+          NEW_IMG_TAG=$(git rev-parse --short HEAD)
         fi
-        echo "Using IMG_TAG = $IMG_TAG"
+        echo "Using NEW_IMG_TAG = $NEW_IMG_TAG"
         
         echo "Starting Build"
-        docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG .
+        docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG .
         
         echo "Push to artifactory"
-        docker push ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG
+        docker push ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG
         
         echo "Docker CleanUp"
-        docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG
+        docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG
         
-        echo "IMG_TAG=$IMG_TAG" >> $GITHUB_OUTPUT
-        echo "IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG" >> $GITHUB_OUTPUT
+        echo "NEW_IMG_TAG=$NEW_IMG_TAG" >> $GITHUB_OUTPUT
+        echo "NEW_IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG" >> $GITHUB_OUTPUT
         cat $GITHUB_ENV
