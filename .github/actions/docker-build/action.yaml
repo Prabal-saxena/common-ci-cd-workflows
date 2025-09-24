@@ -23,7 +23,6 @@ runs:
   using: composite
   steps:
     - name: Docker build
-      id: docker-build
       shell: bash
       run: |-
         ls -al

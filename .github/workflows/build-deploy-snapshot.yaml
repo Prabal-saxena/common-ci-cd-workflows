@@ -72,8 +72,7 @@ jobs:
       IMAGE_NAME: ${{ env.APPLICATION_NAME }}
       VERSION: ${{ env.POM_VERSION }}
       JAR_LOCATION: ${{ env.JAR_LOCATION }}
-      NEW_IMG_TAG: ${{ steps.docker-build.outputs.NEW_IMG_TAG }}
-      NEW_IMG_URL: ${{ steps.docker-build.outputs.NEW_IMG_URL }}
+      NEW_IMG_TAG: ${{ steps.tag-check.outputs.NEW_IMG_TAG }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -104,6 +103,7 @@ jobs:
         run: ls -lh target/
 
       - name: Check for provided tag
+        id: tag-check
         shell: bash
         run: |
           if [ -z "${{ inputs.IMG_TAG }}" ]; then
@@ -113,8 +113,6 @@ jobs:
           
           echo "NEW_IMG_TAG=$NEW_IMG_TAG" >> $GITHUB_OUTPUT
           echo "NEW_IMG_TAG=$NEW_IMG_TAG" >> $GITHUB_ENV
-          echo "NEW_IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG" >> $GITHUB_OUTPUT
-          echo "NEW_IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG" >> $GITHUB_ENV
           cat $GITHUB_ENV
 
       - name: Docker Build
@@ -168,11 +166,8 @@ jobs:
       - name: Update Helm Chart
         shell: bash
         run: |
-          
           if [ -z "${{ inputs.IMG_TAG }}" ]; then
             echo "IMG_TAG => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
-            echo "env IMG_TAG => ${{ env.NEW_IMG_TAG }}"
-            echo "IMG_URL => ${{ needs.build-docker-image.outputs.NEW_IMG_URL }}"
             # Set the shell variable here as well if the input tag is empty
             IMG_TAG_TO_USE="${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
           else
