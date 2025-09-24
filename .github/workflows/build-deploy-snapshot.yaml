@@ -160,16 +160,21 @@ jobs:
           cp ./helm/dev/values.yaml extracted_chart/helm/values.yaml
           cp ./helm/external-secret.yaml extracted_chart/helm/resources/
           echo "Replaced values.yaml & copied external-secret.yaml to helm/resources"
+          ls extracted_chart/helm/resources/
       
           # Show image tag before update
+          echo "----------------------------------------------"
           echo "Before Updating the tag: ${IMG_TAG}"
+          echo "----------------------------------------------"
           cat extracted_chart/helm/values.yaml
       
           # Update image tag using yq (ensure it's quoted)
           VALUE_FILE="extracted_chart/helm/values.yaml"
           sed -i "s/^\(\s*tag:\).*/\1 \"${IMG_TAG}\"/" "$VALUE_FILE"
-      
+          
+          echo "----------------------------------------------"
           echo "After Updating the tag:"
+          echo "----------------------------------------------"
           cat "$VALUE_FILE"
       
           # Update Chart.yaml version and appVersion
