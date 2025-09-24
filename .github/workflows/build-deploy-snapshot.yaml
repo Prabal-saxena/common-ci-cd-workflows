@@ -165,7 +165,7 @@ jobs:
       
           # Update image tag using yq (ensure it's quoted)
           VALUE_FILE="extracted_chart/helm/values.yaml"
-          yq -i ".image.tag = \"${IMG_TAG}\"" "$VALUE_FILE"
+          sed -i "s/^\(\s*tag:\).*/\1 \"${IMG_TAG}\"/" "$VALUE_FILE"
       
           echo "After Updating the tag:"
           cat "$VALUE_FILE"
