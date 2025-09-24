@@ -19,16 +19,14 @@ inputs:
     default: "RELEASE"
     description: Artifactory namespace
 
-outputs:
-  IMG_TAG:
-    description: "Image Tag"
-  IMG_URL:
-    description: "Full Image URL"
-
 runs:
   using: composite
+  outputs:
+    IMG_TAG: ${{ steps.docker-build.outputs.IMG_TAG }}
+    IMG_URL: ${{ steps.docker-build.outputs.IMG_URL }}
   steps:
     - name: Docker build
+      id: docker-build
       shell: bash
       run: |-
         ls -al
@@ -48,6 +46,6 @@ runs:
         echo "Docker CleanUp"
         docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG
         
-        echo "IMG_TAG=$IMG_TAG" >> "$GITHUB_OUTPUT"
-        echo "IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG" >> "$GITHUB_OUTPUT"
+        echo "IMG_TAG=$IMG_TAG" >> $GITHUB_OUTPUT
+        echo "IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMG_TAG" >> $GITHUB_OUTPUT
         cat $GITHUB_ENV

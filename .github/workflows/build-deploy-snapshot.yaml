@@ -118,9 +118,6 @@ jobs:
     name: Build & Publish Helm Package
     needs:
       - build-docker-image
-    env:
-      IMG_TAG: ${{ needs.build-docker-image.outputs.IMG_TAG }}
-      IMG_URL: ${{ needs.build-docker-image.outputs.IMG_URL }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
