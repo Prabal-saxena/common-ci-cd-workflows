@@ -72,6 +72,8 @@ jobs:
       IMAGE_NAME: ${{ env.APPLICATION_NAME }}
       VERSION: ${{ env.POM_VERSION }}
       JAR_LOCATION: ${{ env.JAR_LOCATION }}
+      IMG_TAG: ${{ steps.export-vars.outputs.IMG_TAG }}
+      IMG_URL: ${{ steps.export-vars.outputs.IMG_URL }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
