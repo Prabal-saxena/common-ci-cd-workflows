@@ -122,7 +122,7 @@ jobs:
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/helm_pkg_repo_deploy_gke
         with:
           IMG_NAME: ${APPLICATION_NAME}
-          IMG_TAG: ${NEW_IMG_URL}
+          IMG_TAG: ${NEW_IMG_TAG}
           ARTIFACTORY_URL: ${{ env.ARTIFACTORY_URL }}
           ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
           BUILD_TYPE: ${{ env.BUILD_TYPE }}
