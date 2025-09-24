@@ -167,12 +167,11 @@ jobs:
         shell: bash
         run: |
           if [ -z "${{ inputs.IMG_TAG }}" ]; then
+            IMG_TAG => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }} >> $GITHUB_ENV
             echo "IMG_TAG => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
-            # Set the shell variable here as well if the input tag is empty
-            IMG_TAG_TO_USE="${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
           else
             # If the input tag is not empty, use it instead
-            IMG_TAG_TO_USE="${{ inputs.IMG_TAG }}"
+            IMG_TAG="${{ inputs.IMG_TAG }}"
           fi
           # Ensure resources directory exists
           mkdir -p extracted_chart/helm/resources
