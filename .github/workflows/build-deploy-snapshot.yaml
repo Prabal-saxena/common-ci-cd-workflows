@@ -154,11 +154,11 @@ jobs:
           cp ./helm/dev/values.yaml extracted_chart/helm/values.yaml
           cp ./helm/external-secret.yaml extracted_chart/helm/resources
           echo "Replaced values.yaml & copy external-secret file to helm/resources:"
-          echo "Before Updating the tag: "
+          echo "Before Updating the tag: ${env.IMG_TAG"}"
           cat extracted_chart/helm/values.yaml
           echo "After: "
           VALUE_FILE="extracted_chart/helm/values.yaml"
-          yq -i ".image.tag = ${IMG_TAG"} "$VALUE_FILE"
+          yq -i ".image.tag = ${env.IMG_TAG}" "$VALUE_FILE"
           cat extracted_chart/helm/values.yaml
           
           echo "Updating app version in Chart.yaml file"
