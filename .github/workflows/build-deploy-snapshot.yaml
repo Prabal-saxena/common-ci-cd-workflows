@@ -152,10 +152,13 @@ jobs:
         shell: bash
         run: |
           cp ./helm/dev/values.yaml extracted_chart/helm/values.yaml
-          echo "Replaced values.yaml:"
+          cp ./helm/external-secret.yaml extracted_chart/helm/resources
+          echo "Replaced values.yaml & copy external-secret file to helm/resources:"
+          echo "Before Updating the tag: "
           cat extracted_chart/helm/values.yaml
+          echo "After: "
           VALUE_FILE="extracted_chart/helm/values.yaml"
-          yq -i ".image.tag = \"$IMG_TAG\"" "$VALUE_FILE"
+          yq -i ".image.tag = ${IMG_TAG"} "$VALUE_FILE"
           cat extracted_chart/helm/values.yaml
           
           echo "Updating app version in Chart.yaml file"
@@ -171,7 +174,7 @@ jobs:
           echo "Copy application properties from scr folder"
           cp -r ./src/main/resources extracted_chart/helm
           cp -r ./helm/dev/values.yaml extracted_chart/helm/dev
-          cp -r ./helm/external-secret.yaml extracted_chart/helm/dev
+          cp -r ./helm/external-secret.yaml extracted_chart/helm
           ls -al
 
       - name: Helm package
