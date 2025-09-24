@@ -103,12 +103,26 @@ jobs:
       - name: Check built JAR
         run: ls -lh target/
 
+      - name: Check for provided tag
+        shell: bash
+        run: |
+          if [ -z "${{ inputs.IMG_TAG }}" ]; then
+            NEW_IMG_TAG=$(git rev-parse --short HEAD)
+          fi
+          echo "Using tag = $NEW_IMG_TAG"
+          
+          echo "NEW_IMG_TAG=$NEW_IMG_TAG" >> $GITHUB_OUTPUT
+          echo "NEW_IMG_TAG=$NEW_IMG_TAG" >> $GITHUB_ENV
+          echo "NEW_IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG" >> $GITHUB_OUTPUT
+          echo "NEW_IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$NEW_IMG_TAG" >> $GITHUB_ENV
+          cat $GITHUB_ENV
+
       - name: Docker Build
         id: docker-build
         uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/helm_pkg_repo_deploy_gke
         with:
           IMG_NAME: ${APPLICATION_NAME}
-          IMG_TAG: ${IMG_TAG}
+          IMG_TAG: ${NEW_IMG_URL}
           ARTIFACTORY_URL: ${{ env.ARTIFACTORY_URL }}
           ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
           BUILD_TYPE: ${{ env.BUILD_TYPE }}
@@ -157,6 +171,7 @@ jobs:
           
           if [ -z "${{ inputs.IMG_TAG }}" ]; then
             echo "IMG_TAG => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
+            echo "env IMG_TAG => ${{ env.NEW_IMG_TAG }}"
             echo "IMG_URL => ${{ needs.build-docker-image.outputs.NEW_IMG_URL }}"
             # Set the shell variable here as well if the input tag is empty
             IMG_TAG_TO_USE="${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
