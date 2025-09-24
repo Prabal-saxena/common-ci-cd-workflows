@@ -153,6 +153,9 @@ jobs:
       - name: Update Helm Chart
         shell: bash
         run: |
+          echo "IMG_TAG => ${{ needs.build-docker-image.outputs.IMG_TAG }}"
+          echo "IMG_URL => ${{ needs.build-docker-image.outputs.IMG_URL }}"
+          
           # Ensure resources directory exists
           mkdir -p extracted_chart/helm/resources
       
