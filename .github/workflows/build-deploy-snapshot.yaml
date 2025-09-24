@@ -151,20 +151,31 @@ jobs:
       - name: Update Helm Chart
         shell: bash
         run: |
+          # Ensure resources directory exists
+          mkdir -p extracted_chart/helm/resources
+      
+          # Replace values.yaml and copy external-secret.yaml
           cp ./helm/dev/values.yaml extracted_chart/helm/values.yaml
-          cp ./helm/external-secret.yaml extracted_chart/helm/resources
-          echo "Replaced values.yaml & copy external-secret file to helm/resources:"
-          echo "Before Updating the tag: ${env.IMG_TAG"}"
+          cp ./helm/external-secret.yaml extracted_chart/helm/resources/
+          echo "Replaced values.yaml & copied external-secret.yaml to helm/resources"
+      
+          # Show image tag before update
+          echo "Before Updating the tag: ${IMG_TAG}"
           cat extracted_chart/helm/values.yaml
-          echo "After: "
+      
+          # Update image tag using yq (ensure it's quoted)
           VALUE_FILE="extracted_chart/helm/values.yaml"
-          yq -i ".image.tag = ${env.IMG_TAG}" "$VALUE_FILE"
-          cat extracted_chart/helm/values.yaml
-          
+          yq -i ".image.tag = \"${IMG_TAG}\"" "$VALUE_FILE"
+      
+          echo "After Updating the tag:"
+          cat "$VALUE_FILE"
+      
+          # Update Chart.yaml version and appVersion
           echo "Updating app version in Chart.yaml file"
           CHART_FILE="extracted_chart/helm/Chart.yaml"
           sed -i "s/^version: .*/version: ${APP_VERSION}/" "$CHART_FILE"
           sed -i "s/^appVersion: .*/appVersion: \"${APP_VERSION}\"/" "$CHART_FILE"
+      
           echo "Updated Chart.yaml"
           cat "$CHART_FILE"
 
