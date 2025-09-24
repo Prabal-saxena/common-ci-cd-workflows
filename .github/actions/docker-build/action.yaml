@@ -21,9 +21,6 @@ inputs:
 
 runs:
   using: composite
-  outputs:
-    IMG_TAG: ${{ steps.docker-build.outputs.IMG_TAG }}
-    IMG_URL: ${{ steps.docker-build.outputs.IMG_URL }}
   steps:
     - name: Docker build
       id: docker-build
