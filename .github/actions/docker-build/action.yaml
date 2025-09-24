@@ -42,7 +42,7 @@ runs:
         echo "Docker CleanUp"
         docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:IMG_TAG
         
-        echo "IMG_TAG=${{ inputs.IMG_TAG }}" >> $GITHUB_ENV
-        echo "IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.APPLICATION_NAME }}:${{ inputs.IMG_TAG }}" >> $GITHUB_ENV
+        echo "IMG_TAG=${{ inputs.IMG_TAG }}" >> GITHUB_OUTPUT
+        echo "IMG_URL=${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.APPLICATION_NAME }}:${{ inputs.IMG_TAG }}" >> GITHUB_OUTPUT
         echo "IMG_TAG: ${{ inputs.IMG_TAG }}"
         cat $GITHUB_ENV
