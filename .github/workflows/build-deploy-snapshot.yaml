@@ -167,8 +167,8 @@ jobs:
         shell: bash
         run: |
           if [ -z "${{ inputs.IMG_TAG }}" ]; then
-            IMG_TAG => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }} >> $GITHUB_ENV
-            echo "IMG_TAG => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
+            IMG_TAG_NEW => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }} >> $GITHUB_ENV
+            echo "New Image is: ${{ env.IMG_TAG_NEW }}"
           else
             # If the input tag is not empty, use it instead
             IMG_TAG="${{ inputs.IMG_TAG }}"
@@ -184,13 +184,13 @@ jobs:
       
           # Show image tag before update
           echo "----------------------------------------------"
-          echo "Before Updating the tag: ${IMG_TAG}"
+          echo "Before Updating the tag:"
           echo "----------------------------------------------"
           cat extracted_chart/helm/values.yaml
       
           # Update image tag using yq (ensure it's quoted)
           VALUE_FILE="extracted_chart/helm/values.yaml"
-          sed -i "s/^\(\s*tag:\).*/\1 \"${IMG_TAG}\"/" "$VALUE_FILE"
+          sed -i "s/^\(\s*tag:\).*/\1 \"${{ env.IMG_TAG_NEW }}\"/" "$VALUE_FILE"
           
           echo "----------------------------------------------"
           echo "After Updating the tag:"
