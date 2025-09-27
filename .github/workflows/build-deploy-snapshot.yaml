@@ -167,11 +167,12 @@ jobs:
         shell: bash
         run: |
           if [ -z "${{ inputs.IMG_TAG }}" ]; then
-            echo "IMG_TAG_NEW =${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}" >> $GITHUB_ENV
-            echo "New Image is: ${{ env.IMG_TAG_NEW }}"
+            IMG_TAG="${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}"
+            echo "IMG_TAG=$IMG_TAG" >> $GITHUB_ENV
+            echo "New Image tag is: $IMG_TAG"
           else
             # If the input tag is not empty, use it instead
-            IMG_TAG="${{ inputs.IMG_TAG }}"
+            IMG_TAG="${{ inputs.IMG_TAG }}" >> $GITHUB_ENV
           fi
           # Ensure resources directory exists
           mkdir -p extracted_chart/helm/resources
@@ -190,7 +191,7 @@ jobs:
       
           # Update image tag using yq (ensure it's quoted)
           VALUE_FILE="extracted_chart/helm/values.yaml"
-          sed -i "s/^\(\s*tag:\).*/\1 \"${{ env.IMG_TAG_NEW }}\"/" "$VALUE_FILE"
+          sed -i "s/^\(\s*tag:\).*/\1 \"${{ env.IMG_TAG }}\"/" "$VALUE_FILE"
           
           echo "----------------------------------------------"
           echo "After Updating the tag:"
