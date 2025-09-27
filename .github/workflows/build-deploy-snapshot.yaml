@@ -167,7 +167,7 @@ jobs:
         shell: bash
         run: |
           if [ -z "${{ inputs.IMG_TAG }}" ]; then
-            IMG_TAG_NEW => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }} >> $GITHUB_ENV
+            echo "IMG_TAG_NEW => ${{ needs.build-docker-image.outputs.NEW_IMG_TAG }}" >> $GITHUB_ENV
             echo "New Image is: ${{ env.IMG_TAG_NEW }}"
           else
             # If the input tag is not empty, use it instead
