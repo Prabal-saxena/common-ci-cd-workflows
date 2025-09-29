@@ -26,19 +26,11 @@ runs:
       shell: bash
       run: |-
         ls -al
-        
-        echo "SNAPSHOT version move from target folder to home path and rename the jar"
-        export IMAGE_VERSION_TAG=${{ inputs.IMG_TAG }}
-        
         echo "Starting Build"
-        docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG .
+        docker build -t ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:${{ inputs.IMG_TAG }} .
         
         echo "Push to artifactory"
-        docker push ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG
+        docker push ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:${{ inputs.IMG_TAG }}
         
         echo "Docker CleanUp"
-        docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:$IMAGE_VERSION_TAG
-        
-        echo "IMAGE_VERSION_TAG=$IMAGE_VERSION_TAG" >> $GITHUB_ENV
-        echo "IMAGE_VERSION_TAG : ${{ inputs.IMAGE_VERSION_TAG }}"
-        cat $GITHUB_ENV
+        docker rmi ${{ inputs.ARTIFACTORY_URL }}/${{ inputs.ARTIFACTORY_NAMESPACE }}/${{ inputs.IMG_NAME }}:${{ inputs.IMG_TAG }}
