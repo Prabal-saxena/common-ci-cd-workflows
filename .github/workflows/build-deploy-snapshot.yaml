@@ -83,13 +83,13 @@ jobs:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }} # This SA Secret will auth GCP and download artifacts
 
       - name: Common setup for Configuring Artifactory
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@main
 
       - name: Common Setup for installing maven, JDK & App Version
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/install-maven@feature/helm_pkg_repo_deploy_gke
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/install-maven@main
 
       - name: Deploy with Maven
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/maven-build@feature/helm_pkg_repo_deploy_gke
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/maven-build@main
         with:
           COMMAND: clean install --file pom.xml -s setting.xml -Djib.allowInsecureRegistries=true -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -DskipTests
 
@@ -117,7 +117,7 @@ jobs:
 
       - name: Docker Build
         id: docker-build
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@feature/helm_pkg_repo_deploy_gke
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/docker-build@main
         with:
           IMG_NAME: ${APPLICATION_NAME}
           IMG_TAG: ${NEW_IMG_TAG}
@@ -140,7 +140,7 @@ jobs:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }}
 
       - name: Common setup for Configuring Artifactory
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@main
 
       - name: Get Cluster Details
         uses: 'google-github-actions/get-gke-credentials@v1'
@@ -246,7 +246,7 @@ jobs:
           credentials_json: ${{ secrets.CI_CD_SA_SECRET }}
 
       - name: Common setup for Configuring Artifactory
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@feature/helm_pkg_repo_deploy_gke
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/common@main
 
       - name: Configure GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
@@ -271,7 +271,7 @@ jobs:
           ls -al
 
       - name: Deploy With Helm
-        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/gke-deploy@feature/helm_pkg_repo_deploy_gke
+        uses: Prabal-saxena/common-ci-cd-workflows/.github/actions/gke-deploy@main
         with:
           ARTIFACTORY_URL: ${{ env.ARTIFACTORY_URL }}
           ARTIFACTORY_NAMESPACE: ${{ env.ARTIFACTORY_NAMESPACE }}
