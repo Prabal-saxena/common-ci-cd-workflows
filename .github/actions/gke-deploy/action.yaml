@@ -36,6 +36,7 @@ runs:
       run: |
         kubectl get namespace ${{ inputs.GKE_NAMESPACE }} >/dev/null 2>&1 || \
           kubectl create namespace ${{ inputs.GKE_NAMESPACE }}
+        kubectl get crd externalsecrets.external-secrets.io
 
     - name: Deploy via helm
       shell: bash
