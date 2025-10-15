@@ -64,7 +64,6 @@ runs:
         "${{ inputs.HELM_BIN}}" upgrade \
             --install -f ${{ env.APPLICATION_NAME }}-helm/values.yaml ${{ inputs.RELEASE }} $CHART_PATH \
             --set namespace=${{ inputs.GKE_NAMESPACE }}
-            --dry-run --debug
             --set env="dev"
             --wait \
             --timeout 10m
