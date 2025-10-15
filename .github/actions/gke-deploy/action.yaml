@@ -36,14 +36,6 @@ runs:
       run: |
         kubectl get namespace ${{ inputs.GKE_NAMESPACE }} >/dev/null 2>&1 || \
           kubectl create namespace ${{ inputs.GKE_NAMESPACE }}
-        kubectl get crd externalsecrets.external-secrets.io
-
-    - name: Install All CDR & ESO
-      shell: bash
-      run: |
-        for crd in clustersecretstores secretstores externalsecrets clusterexternalsecrets; do
-          curl -sSL https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/externalsecrets.io_${crd}.yaml | kubectl apply -f -
-        done        
 
     - name: Deploy via helm
       shell: bash
