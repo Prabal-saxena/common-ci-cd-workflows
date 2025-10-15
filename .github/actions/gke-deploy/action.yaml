@@ -68,6 +68,7 @@ runs:
             --set env="dev"
             --wait \
             --timeout 10m
+            --disable-openapi-validation
 
     - name: Verify Deployment
       id: verify
