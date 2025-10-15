@@ -36,6 +36,15 @@ runs:
       run: |
         kubectl get namespace ${{ inputs.GKE_NAMESPACE }} >/dev/null 2>&1 || \
           kubectl create namespace ${{ inputs.GKE_NAMESPACE }}
+    - name: Wait for CRD Schema Registration (10s)
+      shell: bash
+      run: |
+        echo "Waiting up to 10s for the ExternalSecret CRD to be established..."
+        # Note: 'externalsecrets.external-secrets.io' is the fully qualified name for the CRD.
+        kubectl wait --for=condition=Established --timeout=10s crd/externalsecrets.external-secrets.io
+        if [ $? -ne 0 ]; then
+            echo "Warning: ExternalSecret CRD was not fully established after 10 seconds. Proceeding anyway."
+        fi
 
     - name: Deploy via helm
       shell: bash
