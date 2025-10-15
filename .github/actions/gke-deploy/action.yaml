@@ -39,12 +39,23 @@ runs:
     - name: Wait for CRD Schema Registration (10s)
       shell: bash
       run: |
-        echo "Waiting up to 10s for the ExternalSecret CRD to be established..."
-        # Note: 'externalsecrets.external-secrets.io' is the fully qualified name for the CRD.
-        kubectl wait --for=condition=Established --timeout=10s crd/externalsecrets.external-secrets.io
-        if [ $? -ne 0 ]; then
-            echo "Warning: ExternalSecret CRD was not fully established after 10 seconds. Proceeding anyway."
-        fi
+        CRD_ES="externalsecrets.external-secrets.io"
+        CRD_CSS="clustersecretstores.external-secrets.io"
+        TIMEOUT="10s"
+
+        echo "Waiting up to ${TIMEOUT} for ExternalSecret CRD (${CRD_ES}) to be established..."
+        kubectl wait --for=condition=Established --timeout=${TIMEOUT} crd/${CRD_ES} || { 
+            echo "Warning: CRD ${CRD_ES} not ready in ${TIMEOUT}. Proceeding with potential validation risk."
+        }
+
+        echo "Waiting up to ${TIMEOUT} for ClusterSecretStore CRD (${CRD_CSS}) to be established..."
+        kubectl wait --for=condition=Established --timeout=${TIMEOUT} crd/${CRD_CSS} || { 
+            echo "Warning: CRD ${CRD_CSS} not ready in ${TIMEOUT}. Proceeding with potential validation risk."
+        }
+
+        # CRUCIAL: Add a short pause to ensure the client's API discovery cache is updated.
+        echo "CRDs reported ready. Waiting 3 seconds for client cache propagation..."
+        sleep 3
 
     - name: Deploy via helm
       shell: bash
