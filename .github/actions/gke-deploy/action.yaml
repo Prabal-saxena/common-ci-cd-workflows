@@ -41,21 +41,37 @@ runs:
       run: |
         CRD_ES="externalsecrets.external-secrets.io"
         CRD_CSS="clustersecretstores.external-secrets.io"
-        TIMEOUT="10s"
-
-        echo "Waiting up to ${TIMEOUT} for ExternalSecret CRD (${CRD_ES}) to be established..."
-        kubectl wait --for=condition=Established --timeout=${TIMEOUT} crd/${CRD_ES} || { 
-            echo "Warning: CRD ${CRD_ES} not ready in ${TIMEOUT}. Proceeding with potential validation risk."
+        TIMEOUT="60" # Max 60 seconds for the entire polling loop
+        RETRY_INTERVAL="5" # Check every 5 seconds
+        
+        # --- Stage 1: Wait for CRD Condition Established (Server-Side) ---
+        echo "Waiting for CRD conditions to be established (Server-Side check)..."
+        kubectl wait --for=condition=Established --timeout=10s crd/${CRD_ES}
+        kubectl wait --for=condition=Established --timeout=10s crd/${CRD_CSS}
+        
+        # --- Stage 2: Poll until CRD is visible to client (Client-Side Cache Check) ---
+        
+        wait_for_crd_discovery() {
+            local crd_name=$1
+            echo "Polling for client discovery of ${crd_name} for up to ${TIMEOUT}s..."
+        
+            for i in $(seq 1 $(($TIMEOUT / $RETRY_INTERVAL))); do
+                # kubectl get crd checks the client's API discovery and forces a refresh
+                kubectl get crd ${crd_name} -o name 2>/dev/null
+                if [ $? -eq 0 ]; then
+                    echo "Success: CRD ${crd_name} is fully discoverable by the client."
+                    return 0
+                fi
+                echo "Still waiting for ${crd_name} to be fully discoverable... sleeping ${RETRY_INTERVAL}s."
+                sleep ${RETRY_INTERVAL}
+            done
+        
+            echo "Error: CRD ${crd_name} was not discovered within ${TIMEOUT} seconds."
+            return 1
         }
-
-        echo "Waiting up to ${TIMEOUT} for ClusterSecretStore CRD (${CRD_CSS}) to be established..."
-        kubectl wait --for=condition=Established --timeout=${TIMEOUT} crd/${CRD_CSS} || { 
-            echo "Warning: CRD ${CRD_CSS} not ready in ${TIMEOUT}. Proceeding with potential validation risk."
-        }
-
-        # CRUCIAL: Add a short pause to ensure the client's API discovery cache is updated.
-        echo "CRDs reported ready. Waiting 3 seconds for client cache propagation..."
-        sleep 3
+        
+        wait_for_crd_discovery ${CRD_ES}
+        wait_for_crd_discovery ${CRD_CSS}
 
     - name: Deploy via helm
       shell: bash
@@ -64,10 +80,7 @@ runs:
         "${{ inputs.HELM_BIN}}" upgrade \
             --install -f ${{ env.APPLICATION_NAME }}-helm/values.yaml ${{ inputs.RELEASE }} $CHART_PATH \
             --set namespace=${{ inputs.GKE_NAMESPACE }} \
-            --set env="dev" \
-            --wait \
-            --timeout 10m \
-            --disable-openapi-validation
+            --set env="dev"
 
     - name: Verify Deployment
       id: verify
