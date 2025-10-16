@@ -78,7 +78,7 @@ runs:
       run: |
         CHART_PATH=./${{ env.APPLICATION_NAME }}-helm
         "${{ inputs.HELM_BIN}}" upgrade \
-            --install -f ${{ env.APPLICATION_NAME }}-helm/values.yaml ${{ inputs.RELEASE }} $CHART_PATH \
+            --install -f ${{ env.APPLICATION_NAME }}-helm/values.yaml ${{ inputs.RELEASE }}-new $CHART_PATH \
             --set namespace=${{ inputs.GKE_NAMESPACE }} \
             --set env="dev"
 
